@@ -57,6 +57,9 @@ function getOriginOfWord(knownWords, originWordsFile, finalFile) {
       // word.frequency >= 3 &&
       Number.isNaN(Number(word.word))
     ) {
+      if ('bingqi' === word.word) {
+        console.log('bingqi===');
+      }
       unknownWords.push(word.word);
     }
   });
