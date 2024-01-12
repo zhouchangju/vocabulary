@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="./assets/js/dragula.js"></script>
+    <link rel="stylesheet" href="./assets/css/dragula.css" />
+    <script type="text/javascript" src="./raw.js"></script>
+    <script type="text/javascript" src="./easy.js"></script>
+    <style>
+      #words {
+        width: 350px;
+        /* font-size: 15px; */
+      }
+
+      /* 开始 */
+      .wrapper {
+        display: table;
+      }
+
+      .container {
+        display: table-cell;
+        background-color: rgba(255, 255, 255, 0.2);
+        width: 50%;
+      }
+      .container:nth-child(odd) {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+
+      .container > div {
+        cursor: move;
+        cursor: grab;
+        cursor: -moz-grab;
+        cursor: -webkit-grab;
+        display: block;
+      }
+
+      .container > div,
+      .gu-mirror {
+        margin: 10px;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.2);
+        transition: opacity 0.4s ease-in-out;
+      }
+
+      /* 结束 */
+      .line {
+        display: flex;
+        height: 30px;
+        font-size: 20px;
+      }
+
+      .div_word {
+        flex: 2;
+      }
+
+      .div_easy {
+        flex: 1;
+      }
+
+      .div_hard {
+        flex: 1;
+      }
+    </style>
+    <title>单词分类</title>
+  </head>
+
+  <body>
+    <div>
+      <div>
+        共有<span id="total"></span>个单词
+        <button onclick="exportEasyWords()">导出简单词并复制到剪贴板</button>
+        <button onclick="exportHardWords()">
+          导出不认识的词并复制到剪贴板
+        </button>
+      </div>
+    </div>
+    <hr />
+    <div id="words">
+      <div class="wrapper" id="wrapper">
+        <div id="left-rm-spill" class="container"></div>
+        <div id="right-rm-spill" class="container"></div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let html = [];
+    let hardWords = [];
+    words.forEach((word) => {
+      // 过滤掉简单词
+      if (!easy.includes(word)) {
+        html.push(generateWordDiv(word));
+        hardWords.push(word);
+      }
+    });
+    document.querySelector('#total').innerHTML = html.length;
+    document.querySelector('#left-rm-spill').innerHTML = html.join('');
+    addClickEvent();
+
+    // https://github.com/bevacqua/dragula
+    dragula(
+      [
+        document.getElementById('left-rm-spill'),
+        document.getElementById('right-rm-spill'),
+        // document.getElementById('#wrapper'),
+      ]
+      // {
+      //   isContainer: function (el) {
+      //     return false; // only elements in drake.containers will be taken into account
+      //   },
+      //   moves: function (el, source, handle, sibling) {
+      //     return true; // elements are always draggable by default
+      //   },
+      //   accepts: function (el, target, source, sibling) {
+      //     return true; // elements can be dropped in any of the `containers` by default
+      //   },
+      //   invalid: function (el, handle) {
+      //     return false; // don't prevent any drags from initiating by default
+      //   },
+      //   direction: 'vertical', // Y axis is considered when determining where an element would be dropped
+      //   copy: false, // elements are moved by default, not copied
+      //   copySortSource: false, // elements in copy-source containers can be reordered
+      //   revertOnSpill: false, // spilling will put the element back where it was dragged from, if this is true
+      //   removeOnSpill: false, // spilling will `.remove` the element, if this is true
+      //   mirrorContainer: document.body, // set the element that gets mirror elements appended
+      //   ignoreInputTextSelection: true, // allows users to select input text, see details below
+      //   slideFactorX: 0, // allows users to select the amount of movement on the X axis before it is considered a drag instead of a click
+      //   slideFactorY: 0, // allows users to select the amount of movement on the Y axis before it is considered a drag instead of a click
+      // }
+    );
+
+    function generateWordDiv(word) {
+      return `<div  name="${word}">${word} </div>`;
+    }
+
+    function exportWordsByContainer(containerName) {
+      let words = [];
+
+      document
+        .querySelector(containerName)
+        .querySelectorAll('div')
+        .forEach((el) => {
+          words.push(el.innerHTML);
+        });
+
+      copy("'" + words.join("',\r\n'") + "',");
+    }
+
+    function exportEasyWords() {
+      return exportWordsByContainer('#right-rm-spill');
+    }
+
+    function exportHardWords() {
+      return exportWordsByContainer('#left-rm-spill');
+    }
+
+    function copy(str) {
+      var save = function (e) {
+        e.clipboardData.setData('text/plain', str); //下面会说到clipboardData对象
+        e.preventDefault(); //阻止默认行为
+      };
+      document.addEventListener('copy', save);
+      document.execCommand('copy'); //使文档处于可编辑状态，否则无效
+    }
+
+    /**
+     * 需要在页面元素加载完成后才能调用
+     */
+    function addClickEvent() {
+      Array.prototype.slice
+        .call(document.querySelectorAll('.line'))
+        .forEach((el) => {
+          el.addEventListener(
+            'click',
+            function () {
+              localStorage.setItem('last_word', el.getAttribute('name'));
+              console.log(el.getAttribute('name'));
+
+              el.style.backgroundColor = 'lightblue';
+            },
+            true
+          );
+        });
+    }
+  </script>
+</html>
