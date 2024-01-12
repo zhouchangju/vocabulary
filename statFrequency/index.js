@@ -15,7 +15,7 @@ const collins35WordsFile = dir + '/../data/collins3-5.txt';
 const originFile = dir + '/data/novel.txt';
 const wordFrequencyFile = dir + '/data/output.json';
 const filteredFile = dir + '/data/unknownWords.txt';
-const originWordsFile = dir + '/data/unknownWords1.txt.json';
+const originWordsFile = dir + '/data/unknownWords.txt.json';
 const finalFile = dir + '/data/final.txt';
 
 // 统计文件中每个单词出现的次数

@@ -28,8 +28,10 @@ const dir = path.resolve(__dirname, '.');
 const easyWordsFile = dir + '/../data/easy.txt';
 const collins35WordsFile = dir + '/../data/collins3-5.txt';
 
-const rawFile = dir + '/data/8000_raw.txt';
-const filteredFile = dir + '/data/8000_filtered.txt';
+// 需要处理的原始文件
+const rawFile = dir + '/../data/COCA20000.txt';
+// 存放结果的文件
+const filteredFile = dir + '/data/20000_filtered.txt';
 
 const rawWords = fileHelper.getWordsFromFile(rawFile);
 
