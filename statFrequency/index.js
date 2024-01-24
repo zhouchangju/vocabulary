@@ -10,13 +10,13 @@ const getOriginOfWord = require('./getOriginOfWord');
 
 const dir = path.resolve(__dirname, '.');
 
-const easyWordsFile = dir + '/../data/easy.txt';
-const collins35WordsFile = dir + '/../data/collins3-5.txt';
-const originFile = dir + '/data/novel.txt';
-const wordFrequencyFile = dir + '/data/output.json';
-const filteredFile = dir + '/data/unknownWords.txt';
-const originWordsFile = dir + '/data/unknownWords.txt.json';
-const finalFile = dir + '/data/final.txt';
+const easyWordsFile = dir + '/../data/vocabulary/easy.txt';
+const collins35WordsFile = dir + '/../data/vocabulary/collins3-5.txt';
+const originFile = dir + '/../data/process/novel.txt';
+const wordFrequencyFile = dir + '/../data/process/output.json';
+const filteredFile = dir + '/../data/process/unknownWords.txt';
+const originWordsFile = dir + '/../data/process/unknownWords.txt.json';
+const finalFile = dir + '/../data/process/final.txt';
 
 // 统计文件中每个单词出现的次数
 // countWordFrequency(originFile, wordFrequencyFile);
