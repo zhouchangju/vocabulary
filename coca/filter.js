@@ -1,7 +1,7 @@
 let fs = require('fs');
 const path = require('path');
-const fileHelper = require('../statFrequency/lib/file');
-const pathHelper = require('../statFrequency/lib/path');
+const fileHelper = require('../lib/file');
+const pathHelper = require('../lib/path');
 
 function filter(knownWords, rawWords, outputFile) {
   const unknownWords = [];
@@ -25,13 +25,13 @@ function filter(knownWords, rawWords, outputFile) {
 }
 
 const dir = path.resolve(__dirname, '.');
-const easyWordsFile = dir + '/../data/easy.txt';
-const collins35WordsFile = dir + '/../data/collins3-5.txt';
+const easyWordsFile = dir + '/../data/vocabulary/easy.txt';
+const collins35WordsFile = dir + '/../data/vocabulary/collins3-5.txt';
 
 // 需要处理的原始文件
-const rawFile = dir + '/../data/COCA20000.txt';
+const rawFile = dir + '/data/10000_raw.txt';
 // 存放结果的文件
-const filteredFile = dir + '/data/20000_filtered.txt';
+const filteredFile = dir + '/data/10000_filtered.txt';
 
 const rawWords = fileHelper.getWordsFromFile(rawFile);
 

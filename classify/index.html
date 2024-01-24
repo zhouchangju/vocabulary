@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <script type="text/javascript" src="./assets/js/dragula.js"></script>
     <link rel="stylesheet" href="./assets/css/dragula.css" />
-    <script type="text/javascript" src="./raw.js"></script>
-    <script type="text/javascript" src="./easy.js"></script>
+    <script type="text/javascript" src="./data/raw.js"></script>
+    <script type="text/javascript" src="./data/easy.js"></script>
     <style>
       #copy {
         width: 100%;
@@ -14,7 +14,7 @@
         padding: 10px;
       }
       #words {
-        width: 350px;
+        width: 500px;
         /* font-size: 15px; */
       }
 
@@ -92,16 +92,21 @@
     </div>
   </body>
   <script>
-    // 当前到fax
+    // 当前到clarification 1600
     let html = [];
     let hardWords = [];
+    const learnedWords = [];
     words.forEach((word, index) => {
       // 过滤掉简单词
-      if (!easy.includes(word)) {
-        html.push(generateWordDiv(word, index));
-        hardWords.push(word);
-      }
+      // if (!easy.includes(word)) {
+      html.push(generateWordDiv(word, index));
+      hardWords.push(word);
+      // } else {
+      //   learnedWords.push(word);
+      // }
     });
+    // console.log('learnedWords', JSON.stringify(learnedWords));
+    // console.log('hardWords', JSON.stringify(hardWords));
     document.querySelector('#total').innerHTML = html.length;
     document.querySelector('#left-rm-spill').innerHTML = html.join('');
     addClickEvent();

@@ -1,6 +1,6 @@
 let fs = require('fs');
 const path = require('path');
-const pathHelper = require('./lib/path');
+const pathHelper = require('../lib/path');
 
 function filter(knownWords, inputFile, outputFile) {
   const content = fs.readFileSync(inputFile).toString();

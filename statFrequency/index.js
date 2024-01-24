@@ -5,7 +5,7 @@ let fs = require('fs');
 const path = require('path');
 const countWordFrequency = require('./countWordFrequency');
 const filter = require('./filter');
-const fileHelper = require('./lib/file');
+const fileHelper = require('../lib/file');
 const getOriginOfWord = require('./getOriginOfWord');
 
 const dir = path.resolve(__dirname, '.');
