@@ -42,8 +42,8 @@ cd /d/software/stanford-corenlp-4.5.5 && \
 java -mx50g -cp '*' edu.stanford.nlp.pipeline.StanfordCoreNLP \
 -annotators "tokenize,pos,lemma" \
 -outputFormat json   \
--outputDirectory /d/git/vocabulary/statFrequency/data \
--file /d/git/vocabulary/statFrequency/data/unknownWords.txt && \
+-outputDirectory /d/git/vocabulary/data/process \
+-file /d/git/vocabulary/data/process/unknownWords.txt && \
 cd /d/git/vocabulary
 ```
 
@@ -67,7 +67,7 @@ cd /d/git/vocabulary
 
 ## TODO LIST
 
-- [ ] easy 词表只保留一份
+- [x] easy 词表只保留一份
 - [x] 简单词的筛选做成拖动版，可以拖入单词，拖出单词
 - [ ] 实时存储，尽量减少手动文件操作
 - [ ] GPT 一键单词解释、造句功能
@@ -75,3 +75,35 @@ cd /d/git/vocabulary
 - [ ] 修改文件结构和命名
 - [ ] 优化代码
 - [ ] 文章生成器(根据生词和主题，生成文章)
+
+## 用 PDF 生成单词书
+
+1、将 pdf 文件(可以是多个)放入 data/pdf 目录下
+
+2、执行脚本 `statFrequency/pdf2text.js`，会将所有 pdf 文件的内容写入 data/process/pdf.txt 中
+
+3、执行 Stanford CoreNLP 命令：
+
+```shell
+cd /d/software/stanford-corenlp-4.5.5 && \
+java -mx50g -cp '*' edu.stanford.nlp.pipeline.StanfordCoreNLP \
+-annotators "tokenize,pos,lemma" \
+-outputFormat json   \
+-outputDirectory /d/git/vocabulary/data/process \
+-file /d/git/vocabulary/data/process/pdf.txt && \
+cd /d/git/vocabulary
+```
+
+4、执行 `statFrequency/index.js`的如下逻辑：
+
+```javascript
+// 认识的单词
+const knownWords = fileHelper
+  .getWordsFromFile(easyWordsFile)
+  .concat(fileHelper.getWordsFromFile(collins35WordsFile));
+
+// 最后一个参数是保留的词频设置，即词频大于等于 3 的单词会被保留
+getOriginOfWord(knownWords, originWordsFile, finalFile, 3);
+```
+
+即可在 statFrequency/data/final.txt 中看到最终的单词列表

@@ -12,11 +12,12 @@ const dir = path.resolve(__dirname, '.');
 
 const easyWordsFile = dir + '/../data/vocabulary/easy.txt';
 const collins35WordsFile = dir + '/../data/vocabulary/collins3-5.txt';
-const originFile = dir + '/../data/process/novel.txt';
+const originFile = dir + '/../data/process/pdf.txt';
 const wordFrequencyFile = dir + '/../data/process/output.json';
 const filteredFile = dir + '/../data/process/unknownWords.txt';
 const originWordsFile = dir + '/../data/process/unknownWords.txt.json';
 const finalFile = dir + '/../data/process/final.txt';
+const invalidFile = dir + '/../data/process/invalid.txt';
 
 // 统计文件中每个单词出现的次数
 // countWordFrequency(originFile, wordFrequencyFile);
@@ -30,5 +31,13 @@ const knownWords = fileHelper
 // filter(knownWords, wordFrequencyFile, filteredFile);
 // TODO:调用Stanford CoreNLP获取单词的原型
 
+// (临时，待注释)过滤掉不合法的单词(识别错误的非正常单词)
+// const finalWords = fileHelper.getWordsFromFile(finalFile);
+// const invalidWords = fileHelper.getWordsFromFile(invalidFile);
+// const validWords = finalWords.filter((word) => !invalidWords.includes(word));
+// fs.writeFileSync(finalFile, validWords.join('\r\n'));
+
+// TODO:调用Stanford CoreNLP获取单词的原型
+
 // 再次过滤掉不需要统计的单词(认识的单词)
-getOriginOfWord(knownWords, originWordsFile, finalFile);
+getOriginOfWord(knownWords, originWordsFile, finalFile, 3);

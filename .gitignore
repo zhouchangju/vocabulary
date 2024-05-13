@@ -35,5 +35,6 @@ stats.html
 /**/node_modules
 
 /data/process/**
+/data/pdf/**
 
 /*/data

@@ -21,6 +21,11 @@ function getOriginOfWordByStanfordNLP(file) {
   process.execSync(cmd);
 }
 
+/**
+ * 读取Stanford CoreNLP处理后的文件，并添加词频信息
+ * @param {*} file
+ * @returns
+ */
 function getOriginOfWordFromFile(file) {
   let nlpResult = require(file);
   const words = {};
@@ -46,7 +51,12 @@ function getOriginOfWordFromFile(file) {
   return wordArray;
 }
 
-function getOriginOfWord(knownWords, originWordsFile, finalFile) {
+function getOriginOfWord(
+  knownWords,
+  originWordsFile,
+  finalFile,
+  frequency = 1
+) {
   const originWords = getOriginOfWordFromFile(originWordsFile);
 
   const unknownWords = [];
@@ -54,12 +64,9 @@ function getOriginOfWord(knownWords, originWordsFile, finalFile) {
     if (
       !knownWords.includes(word.word) &&
       word.word.length >= 3 &&
-      // word.frequency >= 3 &&
+      word.frequency >= frequency &&
       Number.isNaN(Number(word.word))
     ) {
-      if ('bingqi' === word.word) {
-        console.log('bingqi===');
-      }
       unknownWords.push(word.word);
     }
   });
