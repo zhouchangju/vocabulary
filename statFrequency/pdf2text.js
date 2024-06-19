@@ -27,7 +27,7 @@ function convertPDF2Txt(PDFFile, textFile) {
 // 指定要读取的目录路径
 const directoryPath = dir + '/../data/pdf';
 
-const finalTextFile = dir + '/../data/process/pdf.txt';
+const finalTextFile = dir + '/../data/process/content.txt';
 // 定义一个空数组用于存储文件名
 const fileNames = [];
 

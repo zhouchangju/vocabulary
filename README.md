@@ -80,7 +80,7 @@ cd /d/git/vocabulary
 
 1、将 pdf 文件(可以是多个)放入 data/pdf 目录下
 
-2、执行脚本 `statFrequency/pdf2text.js`，会将所有 pdf 文件的内容写入 data/process/pdf.txt 中
+2、执行脚本 `statFrequency/pdf2text.js`，会将所有 pdf 文件的内容写入 data/process/content.txt 中
 
 3、执行 Stanford CoreNLP 命令：
 
@@ -90,7 +90,7 @@ java -mx50g -cp '*' edu.stanford.nlp.pipeline.StanfordCoreNLP \
 -annotators "tokenize,pos,lemma" \
 -outputFormat json   \
 -outputDirectory /d/git/vocabulary/data/process \
--file /d/git/vocabulary/data/process/pdf.txt && \
+-file /d/git/vocabulary/data/process/content.txt && \
 cd /d/git/vocabulary
 ```
 
@@ -98,11 +98,15 @@ cd /d/git/vocabulary
 
 ```javascript
 // 认识的单词
-const knownWords = fileHelper
+let knownWords = fileHelper
   .getWordsFromFile(easyWordsFile)
   .concat(fileHelper.getWordsFromFile(collins35WordsFile));
 
+// 如果无需过滤认识的单词，则开启下面这一行
+// knownWords = [];
+
 // 最后一个参数是保留的词频设置，即词频大于等于 3 的单词会被保留
+// 如果无需过滤认识的单词，请注意把最后一个参数设置为1
 getOriginOfWord(knownWords, originWordsFile, finalFile, 3);
 ```
 
