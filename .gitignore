@@ -37,7 +37,20 @@ stats.html
 /data/process/**
 /data/pdf/**
 
+# Ignore data directories except toefl_classifier
 /*/data
+!toefl_classifier/data/
+toefl_classifier/data/*
+!toefl_classifier/data/README.md
 
 # Git worktrees
 .worktrees/
+
+# Python virtual environment
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
