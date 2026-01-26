@@ -5,13 +5,18 @@ Run: python toefl_classifier/download_data.py
 """
 
 import os
+import tempfile
 import requests
 import zipfile
 import shutil
 from pathlib import Path
 
-DATA_DIR = Path(__file__).parent / "data"
-DATA_DIR.mkdir(exist_ok=True)
+
+def get_data_dir():
+    """Get and ensure data directory exists."""
+    data_dir = Path(__file__).parent / "data"
+    data_dir.mkdir(exist_ok=True)
+    return data_dir
 
 
 def download_file(url, dest, description):
@@ -24,16 +29,53 @@ def download_file(url, dest, description):
     block_size = 1024
     downloaded = 0
 
-    with open(dest, 'wb') as f:
-        for chunk in response.iter_content(chunk_size=block_size):
-            if chunk:
-                f.write(chunk)
-                downloaded += len(chunk)
-                percent = (downloaded / total_size) * 100 if total_size > 0 else 0
-                print(f"\rProgress: {percent:.1f}%", end='', flush=True)
+    # Download to temporary file first
+    temp_dest = dest.with_suffix(dest.suffix + '.tmp')
+    try:
+        with open(temp_dest, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=block_size):
+                if chunk:
+                    f.write(chunk)
+                    downloaded += len(chunk)
+                    percent = (downloaded / total_size) * 100 if total_size > 0 else 0
+                    print(f"\rProgress: {percent:.1f}%", end='', flush=True)
 
-    print(f"\r✓ Downloaded {description}")
-    return dest
+        # Atomic rename to final destination
+        temp_dest.rename(dest)
+        print(f"\r✓ Downloaded {description}")
+        return dest
+    except Exception:
+        # Clean up temporary file on error
+        if temp_dest.exists():
+            temp_dest.unlink()
+        raise
+
+
+def safe_extract_zip(zip_path, extract_dir):
+    """
+    Safely extract zip file with path sanitization to prevent zip slip attacks.
+
+    Args:
+        zip_path: Path to zip file
+        extract_dir: Directory to extract to
+
+    Raises:
+        ValueError: If a file attempts path traversal outside extract_dir
+    """
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        for member in zip_ref.infolist():
+            # Resolve the full path of the extracted file
+            member_path = (extract_dir / member.filename).resolve()
+
+            # Ensure the resolved path is within the extract directory
+            if not str(member_path).startswith(str(extract_dir.resolve())):
+                raise ValueError(
+                    f"Zip slip vulnerability detected: {member.filename} "
+                    f"attempts to escape extraction directory"
+                )
+
+            # Extract the file safely
+            zip_ref.extract(member, extract_dir)
 
 
 def download_nrc_emotion_lexicon():
@@ -41,32 +83,42 @@ def download_nrc_emotion_lexicon():
     Download NRC Emotion Lexicon.
     Source: https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
     """
+    data_dir = get_data_dir()
     url = "https://saifmohammad.com/WebPages/Downloadlexicon.zip"
-    zip_path = DATA_DIR / "NRC-Emotion-Lexicon.zip"
-    extract_dir = DATA_DIR / "temp_nrc"
+    zip_path = data_dir / "NRC-Emotion-Lexicon.zip"
+    extract_dir = None
 
     try:
         download_file(url, zip_path, "NRC Emotion Lexicon")
 
         print("Extracting...")
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(extract_dir)
+        # Use temporary directory for extraction
+        extract_dir = tempfile.mkdtemp(prefix="nrc_extract_")
+        safe_extract_zip(zip_path, Path(extract_dir))
 
         # Find and rename the text file
-        for file in extract_dir.rglob("*Wordlevel*"):
-            file.rename(DATA_DIR / "nrc_emotion_lexicon.txt")
+        found = False
+        for file in Path(extract_dir).rglob("*Wordlevel*"):
+            file.rename(data_dir / "nrc_emotion_lexicon.txt")
+            found = True
             break
 
-        # Cleanup
-        shutil.rmtree(extract_dir)
-        zip_path.unlink()
+        if not found:
+            raise FileNotFoundError("Could not find Wordlevel lexicon file in downloaded archive")
 
         print("✓ NRC Emotion Lexicon ready")
 
     except Exception as e:
         print(f"⚠ Manual download required for NRC lexicon: {e}")
         print("  Visit: https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm")
-        print(f"  Save to: {DATA_DIR}/nrc_emotion_lexicon.txt")
+        print(f"  Save to: {data_dir}/nrc_emotion_lexicon.txt")
+
+    finally:
+        # Always cleanup temporary files and directories
+        if extract_dir and os.path.exists(extract_dir):
+            shutil.rmtree(extract_dir)
+        if zip_path.exists():
+            zip_path.unlink()
 
 
 def download_academic_word_list():
@@ -74,18 +126,19 @@ def download_academic_word_list():
     Download Academic Word List.
     Uses publicly available source.
     """
+    data_dir = get_data_dir()
     # Public AWL source
     url = "https://www.wordfrequency.info/files/academic_word_list.xls"
 
     try:
-        dest = DATA_DIR / "academic_word_list.xls"
+        dest = data_dir / "academic_word_list.xls"
         download_file(url, dest, "Academic Word List")
         print("✓ Academic Word List downloaded (needs conversion to .txt)")
 
     except Exception as e:
         print(f"⚠ Manual download required for AWL: {e}")
         print("  Visit: https://www.wordfrequency.info/free.asp?s=y")
-        print(f"  Save to: {DATA_DIR}/academic_word_list.txt")
+        print(f"  Save to: {data_dir}/academic_word_list.txt")
 
 
 def create_placeholder_coca_data():
@@ -93,7 +146,8 @@ def create_placeholder_coca_data():
     COCA data requires manual signup.
     Create placeholder with instructions.
     """
-    readme_path = DATA_DIR / "coca_frequency.txt"
+    data_dir = get_data_dir()
+    readme_path = data_dir / "coca_frequency.txt"
 
     if not readme_path.exists():
         with open(readme_path, 'w') as f:
@@ -121,7 +175,8 @@ def create_sample_toefl_corpus():
     Create sample TOEFL frequency data.
     In production, this would be extracted from TPO/Official tests.
     """
-    corpus_path = DATA_DIR / "toefl_corpus.txt"
+    data_dir = get_data_dir()
+    corpus_path = data_dir / "toefl_corpus.txt"
 
     if not corpus_path.exists():
         with open(corpus_path, 'w') as f:
@@ -141,10 +196,11 @@ establish	69
 
 def main():
     """Download all databases."""
+    data_dir = get_data_dir()
     print("=" * 60)
     print("TOEFL Classifier - Database Download")
     print("=" * 60)
-    print(f"Target directory: {DATA_DIR.absolute()}")
+    print(f"Target directory: {data_dir.absolute()}")
     print()
 
     download_nrc_emotion_lexicon()
