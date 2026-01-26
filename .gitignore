@@ -38,3 +38,6 @@ stats.html
 /data/pdf/**
 
 /*/data
+
+# Git worktrees
+.worktrees/
