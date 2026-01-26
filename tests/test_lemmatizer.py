@@ -293,5 +293,80 @@ class TestReturnStructure:
         assert word_family == sorted(word_family)
 
 
+class TestInputValidation:
+    """Test input validation and error handling."""
+
+    def test_non_string_input_raises_type_error(self):
+        """Test that non-string input raises TypeError."""
+        processor = WordFamilyProcessor()
+
+        with pytest.raises(TypeError, match="word must be a string"):
+            processor.get_word_family(123)
+
+        with pytest.raises(TypeError, match="word must be a string"):
+            processor.get_word_family(None)
+
+        with pytest.raises(TypeError, match="word must be a string"):
+            processor.get_word_family(['list'])
+
+    def test_invalid_characters_raises_value_error(self):
+        """Test that words with invalid characters raise ValueError."""
+        processor = WordFamilyProcessor()
+
+        # Numbers not allowed
+        with pytest.raises(ValueError, match="invalid characters"):
+            processor.get_word_family("word123")
+
+        # Special characters not allowed
+        with pytest.raises(ValueError, match="invalid characters"):
+            processor.get_word_family("hello@world")
+
+        with pytest.raises(ValueError, match="invalid characters"):
+            processor.get_word_family("test$")
+
+        # Punctuation (except hyphen and apostrophe) not allowed
+        with pytest.raises(ValueError, match="invalid characters"):
+            processor.get_word_family("word.with.dots")
+
+        with pytest.raises(ValueError, match="invalid characters"):
+            processor.get_word_family("comma,word")
+
+    def test_too_long_word_raises_value_error(self):
+        """Test that words longer than 100 characters raise ValueError."""
+        processor = WordFamilyProcessor()
+
+        long_word = "a" * 101
+        with pytest.raises(ValueError, match="too long"):
+            processor.get_word_family(long_word)
+
+    def test_valid_special_characters_allowed(self):
+        """Test that hyphens and apostrophes are allowed."""
+        processor = WordFamilyProcessor()
+
+        # Hyphenated words should work
+        result = processor.get_word_family("well-known")
+        assert isinstance(result, dict)
+        assert 'lemma' in result
+
+        # Words with apostrophes should work
+        result = processor.get_word_family("don't")
+        assert isinstance(result, dict)
+        assert 'lemma' in result
+
+    def test_whitespace_only_returns_empty(self):
+        """Test that whitespace-only input returns empty result."""
+        processor = WordFamilyProcessor()
+
+        result = processor.get_word_family("   ")
+        assert result['lemma'] == ''
+        assert result['word_family'] == []
+        assert result['pos'] == ''
+
+        result = processor.get_word_family("\t\n")
+        assert result['lemma'] == ''
+        assert result['word_family'] == []
+        assert result['pos'] == ''
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

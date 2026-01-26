@@ -3,10 +3,12 @@ Word family extraction using NLTK WordNet and spaCy.
 Groups morphological and derivationally related forms.
 """
 
+from collections.abc import Set
+from typing import Dict, List
+
 import spacy
-from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
-from collections import defaultdict
+from nltk.stem import WordNetLemmatizer
 
 
 class WordFamilyProcessor:
@@ -16,14 +18,14 @@ class WordFamilyProcessor:
         """Initialize spaCy model and NLTK lemmatizer."""
         try:
             self.nlp = spacy.load("en_core_web_sm")
-        except OSError:
+        except OSError as e:
             raise OSError(
                 "spaCy model not found. Run: python -m spacy download en_core_web_sm"
-            )
+            ) from e
 
         self.lemmatizer = WordNetLemmatizer()
 
-    def get_word_family(self, word):
+    def get_word_family(self, word: str) -> Dict[str, object]:
         """
         Extract lemma, word family, and POS for a given word.
 
@@ -35,7 +37,15 @@ class WordFamilyProcessor:
                 - lemma: Base form of the word
                 - word_family: List of related word forms
                 - pos: Part of speech (NOUN, VERB, ADJ, ADV, or spaCy tags)
+
+        Raises:
+            TypeError: If word is not a string
+            ValueError: If word contains invalid characters or is too long
         """
+        # Input validation
+        if not isinstance(word, str):
+            raise TypeError(f"word must be a string, got {type(word).__name__}")
+
         # Handle empty string
         if not word or not word.strip():
             return {
@@ -44,18 +54,38 @@ class WordFamilyProcessor:
                 'pos': ''
             }
 
-        # Normalize input (strip whitespace)
+        # Validate word content - only allow letters, hyphens, and apostrophes
         word = word.strip()
+        if not all(char.isalpha() or char in {"-", "'"} for char in word):
+            raise ValueError(
+                f"word contains invalid characters: {word!r}. "
+                "Only letters, hyphens, and apostrophes are allowed."
+            )
+
+        # Validate word length (prevent unreasonably long inputs)
+        if len(word) > 100:
+            raise ValueError(
+                f"word is too long ({len(word)} characters). Maximum length is 100 characters."
+            )
 
         # Process with spaCy for POS
-        doc = self.nlp(word)
-        token = doc[0]
+        try:
+            doc = self.nlp(word)
+            if len(doc) == 0:
+                return {
+                    'lemma': word.lower(),
+                    'word_family': [word.lower()],
+                    'pos': 'UNKNOWN'
+                }
+            token = doc[0]
+        except Exception as e:
+            raise RuntimeError(f"spaCy processing failed for word {word!r}") from e
 
         # Get base lemma from spaCy
         lemma = token.lemma_
 
         # Collect word family from WordNet
-        word_family = set()
+        word_family: Set = set()
         word_family.add(lemma.lower())  # Always include the lemma (lowercased)
 
         # Get all derivationally related forms from WordNet
@@ -70,8 +100,10 @@ class WordFamilyProcessor:
                     if lemma_obj.derivationally_related_forms():
                         for related in lemma_obj.derivationally_related_forms():
                             word_family.add(related.name())
-        except Exception:
-            # If WordNet lookup fails, just continue with spaCy lemma
+        except (AttributeError, LookupError, RuntimeError) as e:
+            # If WordNet lookup fails, log and continue with spaCy lemma
+            # Specific exceptions: AttributeError (corrupted data), LookupError (missing data),
+            # RuntimeError (WordNet internal errors)
             pass
 
         # Add common morphological variants based on POS
@@ -103,7 +135,7 @@ class WordFamilyProcessor:
             'pos': pos
         }
 
-    def _normalize_pos(self, pos):
+    def _normalize_pos(self, pos: str) -> str:
         """
         Normalize POS tags to consistent format.
 
@@ -124,9 +156,9 @@ class WordFamilyProcessor:
 
         return pos_mapping.get(pos, pos)
 
-    def _get_verb_forms(self, lemma):
+    def _get_verb_forms(self, lemma: str) -> Set[str]:
         """Generate common verb forms."""
-        forms = set()
+        forms: Set[str] = set()
 
         # Simple rules (not perfect, but good enough for most cases)
         if lemma.endswith('e'):
@@ -145,9 +177,9 @@ class WordFamilyProcessor:
 
         return forms
 
-    def _get_noun_forms(self, lemma):
+    def _get_noun_forms(self, lemma: str) -> Set[str]:
         """Generate common noun forms."""
-        forms = set()
+        forms: Set[str] = set()
 
         # Simple pluralization rules
         if lemma.endswith('y'):
@@ -166,9 +198,9 @@ class WordFamilyProcessor:
 
         return forms
 
-    def _get_adjective_forms(self, lemma):
+    def _get_adjective_forms(self, lemma: str) -> Set[str]:
         """Generate common adjective forms."""
-        forms = set()
+        forms: Set[str] = set()
 
         # Comparative/superlative
         if lemma.endswith('e'):
