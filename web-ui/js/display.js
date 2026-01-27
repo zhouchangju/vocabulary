@@ -48,14 +48,14 @@ class VocabularyDisplay {
                 <div class="word-main">
                     <span class="word-text">${word.word}</span>
                     <div class="badges">
-                        ${band ? `<span class="badge badge-band band-${band}">${band}</span>` : ''}
-                        ${emotion && emotion !== 'neutral' ? `<span class="badge badge-emotion emotion-${emotion}">${this._emotionEmoji(emotion)}</span>` : ''}
-                        ${register ? `<span class="badge badge-register register-${register}">${this._registerEmoji(register)}</span>` : ''}
+                        ${band ? `<span class="badge badge-band band-${band.level}" title="Frequency: ${band.label}">${band.label}</span>` : ''}
+                        ${emotion && emotion !== 'neutral' ? `<span class="badge badge-emotion emotion-${emotion}" title="Emotion: ${emotion}">${this._emotionEmoji(emotion)}</span>` : ''}
+                        ${register ? `<span class="badge badge-register register-${register}" title="Register: ${register}">${this._registerEmoji(register)}</span>` : ''}
                     </div>
                 </div>
                 <div class="word-meta">
-                    <span class="word-family-size">${word.word_family?.length || 1} forms</span>
-                    ${word.pos ? `<span class="badge">${word.pos}</span>` : ''}
+                    <span class="word-family-size" title="Word family: ${word.word_family?.length || 1} related forms">${word.word_family?.length || 1} forms</span>
+                    ${word.pos ? `<span class="badge" title="Part of Speech">${word.pos}</span>` : ''}
                 </div>
             </div>
         `;
@@ -96,9 +96,27 @@ class VocabularyDisplay {
     }
 
     _extractBand(bandStr) {
-        if (!bandStr) return '';
+        if (!bandStr) return null;
+
+        // Extract band information
+        if (bandStr.includes('BEYOND') || bandStr.includes('beyond')) {
+            return { level: 'beyond', label: 'Rare' };
+        }
+
         const match = bandStr.match(/\d+/);
-        return match ? match[0] : '';
+        if (match) {
+            const bandNum = match[0];
+            const labels = {
+                '1': 'Top 3K',
+                '2': 'Common',
+                '3': 'Moderate',
+                '4': 'Low',
+                '5': 'Rare'
+            };
+            return { level: bandNum, label: labels[bandNum] || `Band ${bandNum}` };
+        }
+
+        return null;
     }
 
     _normalizeEmotion(emotion) {

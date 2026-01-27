@@ -242,6 +242,7 @@ header h1 {
 .badge-band.band-3 { background: #98fb98; }
 .badge-band.band-4 { background: #dda0dd; }
 .badge-band.band-5 { background: #ff6347; }
+.badge-band.band-beyond { background: #a0a0a0; }
 
 .badge-emotion {
     background: #e0e0e0;
