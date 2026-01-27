@@ -18,6 +18,7 @@ class VocabularyFilters {
         this.filters.search = query;
         this.activeFilters = true;
         this.data.applyFilters(this.filters);
+        this._render();
     }
 
     toggleFrequencyBand(band) {
@@ -29,6 +30,7 @@ class VocabularyFilters {
         }
         this.activeFilters = true;
         this.data.applyFilters(this.filters);
+        this._render();
     }
 
     toggleEmotion(emotion) {
@@ -40,6 +42,7 @@ class VocabularyFilters {
         }
         this.activeFilters = true;
         this.data.applyFilters(this.filters);
+        this._render();
     }
 
     toggleRegister(register) {
@@ -51,6 +54,7 @@ class VocabularyFilters {
         }
         this.activeFilters = true;
         this.data.applyFilters(this.filters);
+        this._render();
     }
 
     togglePOS(pos) {
@@ -62,6 +66,14 @@ class VocabularyFilters {
         }
         this.activeFilters = true;
         this.data.applyFilters(this.filters);
+        this._render();
+    }
+
+    _render() {
+        // Trigger display update
+        if (window.vocabularyDisplay) {
+            window.vocabularyDisplay.render();
+        }
     }
 
     clear() {

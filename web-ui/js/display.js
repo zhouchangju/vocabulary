@@ -42,6 +42,17 @@ class VocabularyDisplay {
         const emotion = this._normalizeEmotion(word.emotion?.primary);
         const register = this._normalizeRegister(word.register?.register);
 
+        // Create word family list HTML
+        const wordFamilyList = (word.word_family || []).slice(0, 20).join(', ');
+        const hasMoreFamily = (word.word_family || []).length > 20;
+
+        // Dictionary links
+        const dictUrls = {
+            cambridge: `https://dictionary.cambridge.org/dictionary/english/${word.word}`,
+            merriam: `https://www.merriam-webster.com/dictionary/${word.word}`,
+            google: `https://www.google.com/search?q=define+${word.word}`
+        };
+
         return `
             <div class="word-card ${isSelected ? 'selected' : ''}" data-word="${word.word}">
                 ${isSelected ? '' : `<input type="checkbox" class="select-checkbox" data-word="${word.word}">`}
@@ -50,12 +61,22 @@ class VocabularyDisplay {
                     <div class="badges">
                         ${band ? `<span class="badge badge-band band-${band.level}" title="Frequency: ${band.label}">${band.label}</span>` : ''}
                         ${emotion && emotion !== 'neutral' ? `<span class="badge badge-emotion emotion-${emotion}" title="Emotion: ${emotion}">${this._emotionEmoji(emotion)}</span>` : ''}
-                        ${register ? `<span class="badge badge-register register-${register}" title="Register: ${register}">${this._registerEmoji(register)}</span>` : ''}
+                        ${register ? `<span class="badge badge-register register-${register}" title="Register: ${register}">${this._registerLabel(register)}</span>` : ''}
                     </div>
                 </div>
                 <div class="word-meta">
-                    <span class="word-family-size" title="Word family: ${word.word_family?.length || 1} related forms">${word.word_family?.length || 1} forms</span>
+                    <span class="word-family-size clickable"
+                          title="Click to see word family"
+                          data-word="${word.word}"
+                          data-family='${JSON.stringify(word.word_family || [])}'>
+                        ${word.word_family?.length || 1} forms
+                    </span>
                     ${word.pos ? `<span class="badge" title="Part of Speech">${word.pos}</span>` : ''}
+                    <a href="${dictUrls.cambridge}" target="_blank" class="dict-link" title="View in Cambridge Dictionary" data-word="${word.word}">📖</a>
+                </div>
+                <div class="word-family-tooltip" id="family-${word.word.replace(/\s/g, '-')}" style="display: none;">
+                    <strong>Word Family:</strong><br>
+                    ${wordFamilyList}${hasMoreFamily ? '...' : ''}
                 </div>
             </div>
         `;
@@ -81,13 +102,36 @@ class VocabularyDisplay {
         const cards = this.wordGrid.querySelectorAll('.word-card');
         cards.forEach(card => {
             card.addEventListener('click', (e) => {
-                if (e.target.type === 'checkbox') return; // Don't toggle if clicking checkbox
+                // Check if clicking on forms
+                if (e.target.classList.contains('word-family-size') && e.target.classList.contains('clickable')) {
+                    e.stopPropagation();
+                    this._toggleWordFamily(e.target);
+                    return;
+                }
+
+                // Don't toggle if clicking on dictionary link or checkbox
+                if (e.target.classList.contains('dict-link') || e.target.type === 'checkbox') {
+                    return;
+                }
 
                 const wordId = card.dataset.word;
                 this.data.toggleSelect(wordId);
                 this.render(); // Re-render to update selection state
             });
         });
+    }
+
+    _toggleWordFamily(element) {
+        const word = element.dataset.word;
+        const tooltipId = `family-${word.replace(/\s/g, '-')}`;
+        const tooltip = document.getElementById(tooltipId);
+
+        if (tooltip) {
+            const isVisible = tooltip.style.display !== 'none';
+            tooltip.style.display = isVisible ? 'none' : 'block';
+            element.style.color = isVisible ? '' : '#667eea';
+            element.style.fontWeight = isVisible ? '' : 'bold';
+        }
     }
 
     toggleShowSelectedOnly() {
@@ -159,6 +203,16 @@ class VocabularyDisplay {
             'slang': '🤪'
         };
         return emojis[register] || '😐';
+    }
+
+    _registerLabel(register) {
+        const labels = {
+            'formal': '🎩 Formal',
+            'neutral': '😐 Neutral',
+            'informal': '💬 Informal',
+            'slang': '🤪 Slang'
+        };
+        return labels[register] || register;
     }
 
     showLoading() {
