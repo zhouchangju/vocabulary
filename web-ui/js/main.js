@@ -42,6 +42,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log(`Loaded ${vocabularyData.words.length} words`);
 
+    // Check if all words are BEYOND (no COCA data)
+    const allBeyond = vocabularyData.words.every(word => {
+        const band = word.frequency?.band || '';
+        return band.includes('BEYOND') || band.includes('beyond');
+    });
+
+    if (allBeyond) {
+        const dataInfo = document.getElementById('dataInfo');
+        if (dataInfo) {
+            dataInfo.style.display = 'block';
+        }
+    }
+
     // Bind filters to DOM
     vocabularyFilters.bindToDOM();
 

@@ -128,6 +128,13 @@ class VocabularyData {
 
     _extractBand(bandStr) {
         if (!bandStr) return '';
+
+        // Handle "FrequencyBand.BEYOND" format
+        if (bandStr.includes('BEYOND') || bandStr.includes('beyond')) {
+            return 'beyond';
+        }
+
+        // Extract numeric band from "FrequencyBand.BAND_X" or just "X"
         const match = bandStr.match(/\d+/);
         return match ? match[0] : '';
     }

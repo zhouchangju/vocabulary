@@ -130,7 +130,7 @@ class VocabularyFilters {
         }
 
         // Frequency checkboxes
-        const freqBands = ['freqBand1', 'freqBand2', 'freqBand3', 'freqBand4', 'freqBand5'];
+        const freqBands = ['freqBand1', 'freqBand2', 'freqBand3', 'freqBand4', 'freqBand5', 'freqBandBeyond'];
         freqBands.forEach(id => {
             const checkbox = document.getElementById(id);
             if (checkbox) {
@@ -186,7 +186,7 @@ class VocabularyFilters {
 
     _updateFilterCheckboxes() {
         // Update checkboxes to match internal state
-        const freqBands = ['freqBand1', 'freqBand2', 'freqBand3', 'freqBand4', 'freqBand5'];
+        const freqBands = ['freqBand1', 'freqBand2', 'freqBand3', 'freqBand4', 'freqBand5', 'freqBandBeyond'];
         freqBands.forEach(id => {
             const checkbox = document.getElementById(id);
             if (checkbox) {

@@ -49,6 +49,10 @@
                         <input type="checkbox" id="freqBand5" value="5">
                         Band 5 (Rare)
                     </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="freqBandBeyond" value="beyond">
+                        Beyond (不在COCA语料库)
+                    </label>
                 </div>
 
                 <!-- Emotion Filter -->
@@ -128,6 +132,9 @@
                             Show selected only
                         </label>
                     </div>
+                </div>
+                <div id="dataInfo" style="padding: 0.75rem 1.5rem; background: #fff3cd; border-left: 4px solid #ffc107; font-size: 0.9rem; display: none;">
+                    <strong>⚠️ 数据说明：</strong> 所有单词当前标记为"Beyond"（不在COCA语料库中）。需要下载COCA频率数据才能进行准确的频率分级。参考 <code>toefl_classifier/data/README.md</code>
                 </div>
                 <div id="wordGrid" class="word-grid-content">
                     <!-- Words will be rendered here -->
