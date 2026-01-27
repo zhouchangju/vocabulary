@@ -48,9 +48,9 @@ class VocabularyDisplay {
 
         // Dictionary links
         const dictUrls = {
+            oxford: `https://www.oxfordlearnersdictionaries.com/us/definition/english/${word.word}?q=${word.word}`,
             cambridge: `https://dictionary.cambridge.org/dictionary/english/${word.word}`,
-            merriam: `https://www.merriam-webster.com/dictionary/${word.word}`,
-            google: `https://www.google.com/search?q=define+${word.word}`
+            merriam: `https://www.merriam-webster.com/dictionary/${word.word}`
         };
 
         return `
@@ -72,7 +72,7 @@ class VocabularyDisplay {
                         ${word.word_family?.length || 1} forms
                     </span>
                     ${word.pos ? `<span class="badge" title="Part of Speech">${word.pos}</span>` : ''}
-                    <a href="${dictUrls.cambridge}" target="_blank" class="dict-link" title="View in Cambridge Dictionary" data-word="${word.word}">📖</a>
+                    <a href="${dictUrls.oxford}" target="_blank" class="dict-link" title="View in Oxford Learner's Dictionary" data-word="${word.word}">📖</a>
                 </div>
                 <div class="word-family-tooltip" id="family-${word.word.replace(/\s/g, '-')}" style="display: none;">
                     <strong>Word Family:</strong><br>
