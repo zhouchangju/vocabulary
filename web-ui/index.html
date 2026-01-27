@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEFL Vocabulary Classifier</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TOEFL Vocabulary Classifier</h1>
+            <div class="header-actions">
+                <button id="exportAnkiBtn" class="btn btn-primary">Export to Anki</button>
+                <button id="exportMarkdownBtn" class="btn btn-secondary">Export Markdown</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="filters">
+                <h2>Filters</h2>
+
+                <!-- Search -->
+                <div class="filter-section">
+                    <h3>Search</h3>
+                    <input type="text" id="searchInput" placeholder="Search words..." class="form-input">
+                </div>
+
+                <!-- Frequency Filter -->
+                <div class="filter-section">
+                    <h3>Frequency</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="freqBand1" value="1">
+                        Band 1 (Very Common)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="freqBand2" value="2">
+                        Band 2 (Common)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="freqBand3" value="3">
+                        Band 3 (Moderate)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="freqBand4" value="4">
+                        Band 4 (Low)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="freqBand5" value="5">
+                        Band 5 (Rare)
+                    </label>
+                </div>
+
+                <!-- Emotion Filter -->
+                <div class="filter-section">
+                    <h3>Emotion</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="emotionPositive" value="positive">
+                        😊 Positive
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="emotionNegative" value="negative">
+                        😞 Negative
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="emotionNeutral" value="neutral">
+                        😐 Neutral
+                    </label>
+                </div>
+
+                <!-- Register Filter -->
+                <div class="filter-section">
+                    <h3>Register</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="registerFormal" value="formal">
+                        Formal
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="registerNeutral" value="neutral">
+                        Neutral
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="registerInformal" value="informal">
+                        Informal
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="registerSlang" value="slang">
+                        Slang
+                    </label>
+                </div>
+
+                <!-- POS Filter -->
+                <div class="filter-section">
+                    <h3>Part of Speech</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="posNoun" value="NOUN">
+                        Noun
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="posVerb" value="VERB">
+                        Verb
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="posAdj" value="ADJ">
+                        Adjective
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="posAdv" value="ADV">
+                        Adverb
+                    </label>
+                </div>
+
+                <!-- Actions -->
+                <div class="filter-section">
+                    <h3>Actions</h3>
+                    <button id="applyFiltersBtn" class="btn btn-primary" style="width: 100%">Apply Filters</button>
+                    <button id="clearFiltersBtn" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;">Clear Filters</button>
+                    <button id="selectAllBtn" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;">Select All</button>
+                </div>
+            </aside>
+
+            <main class="word-grid">
+                <div class="grid-header">
+                    <span id="resultCount">Loading vocabulary...</span>
+                    <div class="view-controls">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showSelectedOnly">
+                            Show selected only
+                        </label>
+                    </div>
+                </div>
+                <div id="wordGrid" class="word-grid-content">
+                    <!-- Words will be rendered here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/display.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
