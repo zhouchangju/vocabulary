@@ -158,7 +158,7 @@ class VocabularyFilters {
         if (applyBtn) {
             applyBtn.addEventListener('click', () => {
                 this.data.applyFilters(this.filters);
-                display.render();
+                window.vocabularyDisplay.render();
             });
         }
 
@@ -167,7 +167,7 @@ class VocabularyFilters {
             clearBtn.addEventListener('click', () => {
                 this.clear();
                 this._updateFilterCheckboxes();
-                display.render();
+                window.vocabularyDisplay.render();
             });
         }
     }

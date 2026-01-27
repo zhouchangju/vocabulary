@@ -168,7 +168,7 @@ class VocabularyDisplay {
     }
 }
 
-// Global display instance
+// Global display instance (set by main.js)
 let display = null;
 
 // Initialize when DOM is ready

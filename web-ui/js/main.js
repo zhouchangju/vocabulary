@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.vocabularyDisplay = vocabularyDisplay;
     window.vocabularyExport = vocabularyExport;
 
+    // Also set display for compatibility with filters.js
+    window.display = vocabularyDisplay;
+
     // Show loading state
     vocabularyDisplay.showLoading();
 
