@@ -51,6 +51,14 @@ cd /d/git/vocabulary
 
 即可在 statFrequency/data/final.txt 中看到最终的单词列表
 
+> 如果本地路径不同，可使用环境变量覆盖默认路径：
+>
+> - `STANFORD_CORENLP_DIR`：CoreNLP 安装目录
+> - `CORENLP_OUTPUT_DIR`：CoreNLP 输出目录
+> - `CORENLP_OUTPUT_FILE`：CoreNLP 输出文件
+> - `RUN_CORENLP=true`：在运行 `statFrequency/index.js` 时自动执行 CoreNLP
+> - `MIN_WORD_LENGTH` / `MIN_WORD_FREQUENCY` / `WORD_LIMIT`：过滤阈值配置
+
 ## 手动筛选认识的单词
 
 1、将初步过滤好的单词写入 data/process/toBeFiltered.txt

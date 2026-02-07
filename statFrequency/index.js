@@ -18,6 +18,11 @@ const filteredFile = dir + '/../data/process/unknownWords.txt';
 const originWordsFile = dir + '/../data/process/content.txt.json';
 const finalFile = dir + '/../data/process/final.txt';
 const invalidFile = dir + '/../data/process/invalid.txt';
+const frequencyThreshold = Number.parseInt(
+  process.env.MIN_WORD_FREQUENCY ?? '1',
+  10
+);
+const runCoreNLP = process.env.RUN_CORENLP === 'true';
 
 // 统计文件中每个单词出现的次数
 // countWordFrequency(originFile, wordFrequencyFile);
@@ -44,4 +49,7 @@ knownWords = [];
 
 // 再次过滤掉不需要统计的单词(认识的单词)
 // 如果无需过滤认识的单词，请注意把最后一个参数设置为1
-getOriginOfWord(knownWords, originWordsFile, finalFile, 1);
+if (runCoreNLP) {
+  getOriginOfWord.runCoreNLP(originFile);
+}
+getOriginOfWord(knownWords, originWordsFile, finalFile, frequencyThreshold);

@@ -1,35 +1,54 @@
 let fs = require('fs');
 const path = require('path');
 const pathHelper = require('../lib/path');
+const { normalizeWord, isNumeric } = require('../lib/words');
 
 function filter(knownWords, inputFile, outputFile) {
   const content = fs.readFileSync(inputFile).toString();
-  const words = JSON.parse(content);
+  let words;
+  try {
+    words = JSON.parse(content);
+  } catch (error) {
+    throw new Error(`Invalid JSON in ${inputFile}: ${error.message}`);
+  }
+  const knownWordSet = new Set(knownWords.map((word) => normalizeWord(word)));
+
+  const minLength = Number.parseInt(process.env.MIN_WORD_LENGTH ?? '3', 10);
+  const minFrequency = Number.parseInt(
+    process.env.MIN_WORD_FREQUENCY ?? '3',
+    10
+  );
+  const wordLimit = Number.parseInt(process.env.WORD_LIMIT ?? '6000', 10);
 
   const unknownWords = [];
   const unknownWordArr = [];
   let learned = 0;
   words.forEach((word) => {
-    if (knownWords.includes(word.word)) {
+    const normalized = normalizeWord(word.word);
+    if (!normalized) {
+      return;
+    }
+    if (knownWordSet.has(normalized)) {
       learned++;
     }
 
     if (
-      !knownWords.includes(word.word) &&
-      word.word.length >= 3 &&
-      word.frequency >= 3 &&
-      Number.isNaN(Number(word.word))
+      !knownWordSet.has(normalized) &&
+      normalized.length >= minLength &&
+      word.frequency >= minFrequency &&
+      !isNumeric(normalized)
     ) {
-      unknownWords.push(word.word);
-      unknownWordArr.push(word);
+      unknownWords.push(normalized);
+      unknownWordArr.push({ ...word, word: normalized });
     }
   });
 
   console.log(`已经学会的单词数：${learned}`);
   // 只截取前面一部分背诵
-  const WORD_LENGTH_LIMIT = 6000;
-  unknownWords.splice(WORD_LENGTH_LIMIT);
-  unknownWordArr.splice(WORD_LENGTH_LIMIT);
+  if (wordLimit > 0) {
+    unknownWords.splice(wordLimit);
+    unknownWordArr.splice(wordLimit);
+  }
 
   fs.writeFileSync(outputFile, unknownWords.join('\r\n'));
 

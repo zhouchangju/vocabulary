@@ -2,17 +2,28 @@ let fs = require('fs');
 const path = require('path');
 const fileHelper = require('../lib/file');
 const pathHelper = require('../lib/path');
+const { normalizeWord, isNumeric } = require('../lib/words');
 
 function filter(knownWords, rawWords, outputFile) {
   const unknownWords = [];
+  const knownWordSet = new Set(knownWords.map((word) => normalizeWord(word)));
+  const minLength = Number.parseInt(process.env.MIN_WORD_LENGTH ?? '3', 10);
   let learned = 0;
   rawWords.forEach((word) => {
-    if (knownWords.includes(word)) {
+    const normalized = normalizeWord(word);
+    if (!normalized) {
+      return;
+    }
+    if (knownWordSet.has(normalized)) {
       learned++;
     }
 
-    if (!knownWords.includes(word) && Number.isNaN(Number(word.word))) {
-      unknownWords.push(word);
+    if (
+      !knownWordSet.has(normalized) &&
+      normalized.length >= minLength &&
+      !isNumeric(normalized)
+    ) {
+      unknownWords.push(normalized);
     }
   });
 
