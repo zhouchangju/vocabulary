@@ -72,6 +72,7 @@ python3 scripts/compare_kmf_toefl.py
 
 ## TODO LIST
 
+<!-- Agent Swarm Test: Comment added on 2026-02-27 to verify agent swarm functionality in worktree -->
 - [x] easy 词表只保留一份
 - [x] 图像版 PDF 单词高精度 OCR 提取 (V6)
 - [x] 网页版单词快速标注工具 (LocalStorage)
