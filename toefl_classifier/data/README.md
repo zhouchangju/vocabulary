@@ -6,8 +6,17 @@ This directory stores linguistic databases and reference data for the TOEFL voca
 
 ### Linguistic Databases
 - **COCA (Corpus of Contemporary American English)**: Word frequency data
-  - `coca_word_freq.txt` - Word frequency rankings from COCA corpus
+  - `coca_frequency.txt` - Word frequency rankings from COCA corpus (60,021 words)
   - Source: https://www.english-corpora.org/coca/
+  - **Status**: ✅ Downloaded and integrated
+
+- **NRC Emotion Lexicon**: Emotion annotation data
+  - `nrc_emotion_lexicon.txt` - Emotion annotations for English words
+  - Source: https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
+  - **Status**: ⚠️ **MISSING** - Currently using heuristic patterns
+  - **Download**: Register for free at https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
+  - **Installation**: Download `NRC-Emotion-Lexicon-Wordlevel-v0.92.txt` and save as `nrc_emotion_lexicon.txt` in this directory
+  - **Impact**: Without this file, emotion analysis relies on heuristic patterns (currently 68.9% neutral vs 95% before improvements)
 
 - **WordNet**: Lexical database
   - Automatically accessed via NLTK

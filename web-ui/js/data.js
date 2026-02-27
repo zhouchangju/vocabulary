@@ -142,16 +142,25 @@ class VocabularyData {
     _normalizeEmotion(emotion) {
         if (!emotion) return 'neutral';
         const e = emotion.toLowerCase();
-        if (e.includes('posit')) return 'positive';
-        if (e.includes('negat')) return 'negative';
+        
+        // Positive emotions
+        if (e.includes('posit') || e.includes('joy')) return 'positive';
+        
+        // Negative emotions
+        if (e.includes('negat') || 
+            e.includes('anger') || 
+            e.includes('sadness') || 
+            e.includes('fear') || 
+            e.includes('disgust')) return 'negative';
+            
         return 'neutral';
     }
 
     _normalizeRegister(register) {
         if (!register) return 'neutral';
         const r = register.toLowerCase();
-        if (r.includes('formal')) return 'formal';
         if (r.includes('informal')) return 'informal';
+        if (r.includes('formal')) return 'formal';
         if (r.includes('slang')) return 'slang';
         return 'neutral';
     }

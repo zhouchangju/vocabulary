@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Initial render
-    vocabularyFilters.bindToDOM();
     vocabularyDisplay.render();
 
     console.log('TOEFL Vocabulary Classifier ready!');

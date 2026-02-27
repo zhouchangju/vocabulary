@@ -26,22 +26,48 @@ class RegisterTagger:
         # Academic suffixes
         'tion', 'sion', 'ment', 'ence', 'ance', 'ity', 'ness', 'ism', 'ist',
         'ology', 'graphy', 'phy', 'mony', 'nomy', 'ture', 'ship', 'hood',
+        'tude', 'osis', 'iasis', 'cracy', 'cide', 'nomy', 'metry', 'scopy',
+        'logy', 'gamy', 'sophy', 'naut', 'vorous', 'fication', 'ization',
+        'ate', 'ite', 'ive', 'ous', 'al', 'ic', 'ary', 'ory', 'an', 'ine',
+        'ile', 'id', 'ant', 'ent', 'ory', 'ary', 'ate', 'ize', 'ify',
         # Latin/Greek roots
         'struct', 'script', 'spect', 'dict', 'cred', 'miss', 'mit', 'port',
         'pos', 'pon', 'stat', 'stit', 'scrib', 'tract', 'vert', 'vers',
+        'ject', 'rupt', 'duct', 'flect', 'flex', 'rect', 'vict', 'vinc',
+        'fact', 'fic', 'fect', 'cap', 'cept', 'cip', 'ceive', 'ten', 'tin',
+        'tain', 'fer', 'lat', 'grad', 'gress', 'ced', 'cess', 'cur', 'curs',
         # Formal vocabulary
         'according', 'consequently', 'furthermore', 'nevertheless', 'therefore',
         'thus', 'hence', 'whereby', 'wherein', 'hereby', 'aforementioned',
-        'notwithstanding', 'pertaining', 'regarding', 'concerning', 'respecting'
+        'notwithstanding', 'pertaining', 'regarding', 'concerning', 'respecting',
+        'albeit', 'hitherto', 'thou', 'thee', 'thy', 'ye', 'lo', 'behold'
     }
 
     # Informal indicators
     INFORMAL_PATTERNS = {
         # Contractions/shortened forms
         'gonna', 'wanna', 'kinda', 'sorta', 'outta', 'gotta', 'hafta',
+        'dunno', 'gimme', 'lemme', 'gotcha', 'nope', 'yep', 'yeah',
         # Casual words
         'stuff', 'things', 'okay', 'alright', 'maybe', 'kinda', 'sorta',
-        'kids', 'folks', 'guys', 'bunch', 'lot', 'tons', 'loads'
+        'kids', 'folks', 'guys', 'bunch', 'lot', 'tons', 'loads',
+        'crazy', 'dumb', 'stupid', 'mad', 'weird', 'gross', 'mess',
+        'fix', 'job', 'boss', 'cop', 'crook', 'jail', 'dad', 'mom',
+        'grandpa', 'grandma', 'bike', 'car', 'bus', 'phone', 'photo',
+        'math', 'exam', 'gym', 'lab', 'ad', 'app', 'info', 'net', 'web',
+        'blog', 'chat', 'email', 'text'
+    }
+    
+    # Common verbs that are often informal/neutral compared to latin equivalents
+    COMMON_VERBS = {
+        'get', 'put', 'make', 'do', 'go', 'come', 'see', 'look', 'say',
+        'tell', 'ask', 'give', 'take', 'keep', 'let', 'help', 'show',
+        'seem', 'feel', 'try', 'leave', 'call', 'run', 'need', 'become',
+        'mean', 'set', 'move', 'play', 'pay', 'hear', 'include', 'believe',
+        'allow', 'meet', 'lead', 'live', 'stand', 'happen', 'carry', 'talk',
+        'appear', 'produce', 'sit', 'offer', 'consider', 'expect', 'suggest',
+        'buy', 'break', 'cut', 'hit', 'eat', 'drink', 'sleep', 'wake',
+        'walk', 'stop', 'start', 'watch', 'read', 'write', 'speak', 'learn'
     }
 
     # Slang indicators
@@ -49,17 +75,20 @@ class RegisterTagger:
         # Very informal/slang
         'cool', 'awesome', 'dope', 'sick', 'lit', 'fire', ' vibes',
         'bro', 'dude', 'chill', 'hang', 'super', 'mega', 'ultra',
-        'boo', 'bae', 'fam', 'squad', 'bestie', 'ghost', 'catfish'
+        'boo', 'bae', 'fam', 'squad', 'bestie', 'ghost', 'catfish',
+        'cringe', 'salty', 'shady', 'basic', 'gucci', 'extra', 'flex',
+        'goat', 'tea', 'cap', 'simp', 'sus', 'yeet', 'yolo', 'fomo'
     }
 
     # Domain-specific academic vocabulary
     ACADEMIC_DOMAINS = {
-        'science': ['hypothesis', 'theory', 'experiment', 'analyze', 'data', 'conclusion'],
-        'literature': ['metaphor', 'narrative', 'protagonist', 'allegory', 'genre'],
-        'philosophy': ['ethics', 'paradigm', 'epistemology', 'ontology', 'dialectic'],
-        'economics': ['inflation', 'recession', 'commodity', 'equilibrium', 'utility'],
-        'law': ['precedent', 'statute', 'litigation', 'jurisdiction', 'plaintiff'],
-        'medicine': ['symptom', 'diagnosis', 'pathology', 'treatment', 'prognosis']
+        'science': ['hypothesis', 'theory', 'experiment', 'analyze', 'data', 'conclusion', 'method'],
+        'literature': ['metaphor', 'narrative', 'protagonist', 'allegory', 'genre', 'theme'],
+        'philosophy': ['ethics', 'paradigm', 'epistemology', 'ontology', 'dialectic', 'logic'],
+        'economics': ['inflation', 'recession', 'commodity', 'equilibrium', 'utility', 'market'],
+        'law': ['precedent', 'statute', 'litigation', 'jurisdiction', 'plaintiff', 'defendant'],
+        'medicine': ['symptom', 'diagnosis', 'pathology', 'treatment', 'prognosis', 'anatomy'],
+        'arts': ['aesthetic', 'composition', 'perspective', 'medium', 'technique', 'style']
     }
 
     def __init__(self, corpus_file: Optional[Path] = None):
@@ -160,6 +189,10 @@ class RegisterTagger:
             if pattern in word:
                 return (RegisterType.INFORMAL, 'medium')
 
+        # Check for common verbs (likely informal/neutral)
+        if word in self.COMMON_VERBS:
+            return (RegisterType.INFORMAL, 'low')
+
         # Check for formal patterns
         for pattern in self.FORMAL_PATTERNS:
             if pattern in word:
@@ -170,9 +203,22 @@ class RegisterTagger:
             if word in domain_words:
                 return (RegisterType.FORMAL, 'high')
 
-        # Check word length and structure (longer words tend to be more formal)
-        if len(word) >= 8:
-            return (RegisterType.FORMAL, 'low')
+        # Check word length and structure
+        # Longer words in TOEFL context are VERY likely formal/academic
+        # But we should be more balanced to avoid over-classifying as FORMAL
+        if len(word) >= 10:
+            return (RegisterType.FORMAL, 'medium')
+        elif len(word) >= 8:
+            # Check for multi-syllabic structure indicators
+            # Count vowels as rough syllable counter
+            vowel_count = sum(1 for c in word if c in 'aeiouy')
+            if vowel_count >= 3:
+                return (RegisterType.FORMAL, 'low')
+            else:
+                return (RegisterType.NEUTRAL, 'low')
+        elif len(word) <= 4:
+            # Short words are more likely neutral/informal in TOEFL context
+            return (RegisterType.NEUTRAL, 'low')
 
-        # Default to neutral
+        # Default to neutral instead of formal
         return (RegisterType.NEUTRAL, 'low')

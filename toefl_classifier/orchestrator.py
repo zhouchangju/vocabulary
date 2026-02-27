@@ -115,8 +115,8 @@ class TOEFLWordClassifier:
                 frequency_result = self.frequency_grader.grade_word(word)
                 result['frequency'] = {
                     'band': frequency_result['band'],
-                    'rank': frequency_result['rank'],
-                    'normalized_score': frequency_result['normalized_score']
+                    'rank': frequency_result.get('rank'),
+                    'source': frequency_result.get('source', 'Unknown')
                 }
             except Exception as e:
                 result['frequency_error'] = str(e)
@@ -131,35 +131,33 @@ class TOEFLWordClassifier:
             try:
                 emotion_result = self.emotion_analyzer.analyze_emotion(word)
                 result['emotion'] = {
-                    'emotions': emotion_result['emotions'],
-                    'primary_emotion': emotion_result['primary_emotion'],
-                    'confidence': emotion_result['confidence'],
-                    'emotion_scores': emotion_result['emotion_scores']
+                    'emotions': emotion_result.get('emotions', []),
+                    'primary': emotion_result.get('primary', 'neutral'),
+                    'source': emotion_result.get('source', 'Unknown')
                 }
             except Exception as e:
                 result['emotion_error'] = str(e)
                 result['emotion'] = {
                     'emotions': [],
-                    'primary_emotion': None,
-                    'confidence': 0.0,
-                    'emotion_scores': {}
+                    'primary': 'neutral',
+                    'source': 'Error'
                 }
 
         # Register tagging
         if not skip_register:
             try:
-                register_result = self.register_tagger.classify_register(word)
+                register_result = self.register_tagger.tag_register(word)
                 result['register'] = {
-                    'register_type': register_result['register'],
-                    'confidence': register_result['confidence'],
-                    'context': register_result['context']
+                    'register': register_result.get('register', RegisterType.NEUTRAL),
+                    'confidence': register_result.get('confidence', 'low'),
+                    'source': register_result.get('source', 'Unknown')
                 }
             except Exception as e:
                 result['register_error'] = str(e)
                 result['register'] = {
-                    'register_type': RegisterType.NEUTRAL,
-                    'confidence': 0.0,
-                    'context': 'unknown'
+                    'register': RegisterType.NEUTRAL,
+                    'confidence': 'low',
+                    'source': 'Error'
                 }
 
         # Cache result
